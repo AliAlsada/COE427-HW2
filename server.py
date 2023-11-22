@@ -70,7 +70,7 @@ with rti.open_connector(
 
             # Forward data to healthcare providers
             server_output.instance.set_dictionary(data)
-            server_output.write(action="dispose")
+            server_output.write()
 
 
 

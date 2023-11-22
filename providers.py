@@ -6,63 +6,47 @@ import os
 import rticonnextdds_connector as rti
 
 lock = threading.RLock()
-finish_thread = True
-search_thread = True
+thread_state = True
+monitor_thread_state = True
 
 def command_task(patient_data):
     
-    global finish_thread
-    global search_thread
+    global thread_state
+    global monitor_thread_state
 
-    while finish_thread:
+    while thread_state:
         command = input("Enter command: \n")
 
-        if command == "exit":
-            finish_thread = False
-            search_thread = False
+        if command.upper() == "EXIT":
+            thread_state = False
+            monitor_thread_state = False
 
-        elif command.startswith("monitor"):
-
-            search_thread = True 
+        #monitor a specific patient vital sign  
+        elif command.upper() == "MONITOR":
+            
             patient_id = int(input("Enter the patient id: "))
 
+            monitor_thread_state = True 
             monitor_thread = threading.Thread(target=search_patient_data, args=(patient_id, patient_data, lock))
             monitor_thread.start()
 
-        elif command == "stop":
-                search_thread = False
-                monitor_thread.join()
+        #stop monitoring a specific patient vital sign
+        elif command.upper() == "STOP":
+            monitor_thread_state = False
+            monitor_thread.join()
 
 
 def search_patient_data(patient_id, patient_data, lock):
 
-    while search_thread:
+    while monitor_thread_state:
         with lock:
             patient_data.wait()
             patient_data.take()
             for sample in patient_data.samples.valid_data_iter:
+                #======== filter the data based on the patient id ==========
                 if sample["patient_id"] == patient_id:
                     data = sample.get_dictionary()
                     print("Received data:", data)
-            
-
-
-def data_subscriber_task(patient_data):
-    global finish_thread
-
-    while finish_thread == False:
-        try:
-            patient_data.wait(500)
-        except rti.TimeoutError as error:
-            continue
-
-        # with lock:
-        #     patient_data.wait()
-        #     patient_data.take()
-        #     for sample in patient_data.samples.valid_data_iter:
-        #             data = sample.get_dictionary()
-        #             print("Received data:", data)
-        
 
 
 

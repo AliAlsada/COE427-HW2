@@ -2,6 +2,7 @@
 <dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://community.rti.com/schema/7.2.0/rti_routing_service.xsd" version="7.2.0">
     <types>
       <struct name="Sensor_Type">
+        <member name="sensor_id" type="int32" key="true"/>
         <member name="patient_id" type="int32" key="true"/>
         <member name="heart_rate" type="int32" key="true"/>
         <member name="blood_pressure" type="int32" key="true"/>
@@ -22,6 +23,7 @@
         <register_type name="Sensor" type_ref="Sensor_Type"/>
         <register_type name="Healthcare_Providers" type_ref="Healthcare_Providers_Type"/>
         <topic name="Sensor_data" register_type_ref="Sensor"/>
+        <topic name="Server_data" register_type_ref="Sensor"/>
       </domain>
     </domain_library>
 
@@ -33,8 +35,7 @@
       </domain_participant>
       <domain_participant name="Providers_Participant" domain_ref="DomainLibrary::SystemDomain">
         <subscriber name="Provider_Subscriber">
-          <data_reader name="Provider_Reader" topic_ref="Sensor_data">
-          </data_reader>
+          <data_reader name="Provider_Reader" topic_ref="Server_data"/>
         </subscriber>
       </domain_participant>
       <domain_participant name="Server_Participant" domain_ref="DomainLibrary::SystemDomain">
@@ -42,7 +43,7 @@
           <data_reader name="Sensor_Reader" topic_ref="Sensor_data"/>
         </subscriber>
         <publisher name="Server_Publisher">
-          <data_writer name="Server_Writer" topic_ref="Sensor_data">
+          <data_writer name="Server_Writer" topic_ref="Server_data">
             <datawriter_qos base_name="BuiltinQosLib::Generic.KeepLastReliable.Transient">
               <deadline>
                 <period>
