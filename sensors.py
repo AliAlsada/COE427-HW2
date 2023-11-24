@@ -24,9 +24,9 @@ def generate_vital_sign(sensor_output):
 
     while thread_state:
         # Generate random vital sign data
-        heart_rate = random.randint(80, 90)
-        blood_pressure = random.randint(70, 80)
-        oxygen_saturation = random.randint(95, 100)
+        heart_rate = random.randint(50, 170)
+        blood_pressure = random.randint(70, 180)
+        oxygen_saturation = random.randint(90, 110)
 
         #Unix time
         timestamp = time.time()
