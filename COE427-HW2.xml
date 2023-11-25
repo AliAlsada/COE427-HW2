@@ -16,6 +16,38 @@
     </types>
 
     <qos_library name="QosLibrary">
+      <qos_profile name="Sensors" base_name="BuiltinQosLib::Pattern.Status">
+        <datawriter_qos>
+          <liveliness>
+            <lease_duration>
+              <sec>3</sec>
+              <nanosec>0</nanosec>
+            </lease_duration>
+          </liveliness>
+        </datawriter_qos>
+      </qos_profile>
+      <qos_profile name="Providers" base_name="BuiltinQosLib::Pattern.Status">
+        <datareader_qos>
+          <liveliness>
+            <lease_duration>
+              <sec>3</sec>
+              <nanosec>0</nanosec>
+            </lease_duration>
+          </liveliness>
+        </datareader_qos>
+      </qos_profile>
+      <qos_profile name="server">
+        <datareader_qos>
+          <reliability>
+            <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+          </reliability>
+        </datareader_qos>
+        <datawriter_qos>
+          <reliability>
+            <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+          </reliability>
+        </datawriter_qos>
+      </qos_profile>
     </qos_library>
 
     <domain_library name="DomainLibrary">
@@ -30,7 +62,20 @@
     <domain_participant_library name="DomainParticipantLibrary">
       <domain_participant name="Sensor_Participant" domain_ref="DomainLibrary::SystemDomain">
         <publisher name="Sensor_Publisher">
-          <data_writer name="Sensor_Writer" topic_ref="Sensor_data"/>
+          <data_writer name="Sensor_Writer" topic_ref="Sensor_data">
+            <datawriter_qos base_name="QosLibrary::Sensors">
+              <property>
+              <value>
+                <element>
+                  <name>dds.data_writer.history.memory_manager.fast_pool.pool_buffer_max_size</name>
+                  <value>4096</value>
+                </element>  
+              </value>  
+            </property>  
+            </datawriter_qos>
+          </data_writer>
+          <publisher_qos base_name="QosLibrary::Sensors">
+          </publisher_qos>
         </publisher>
       </domain_participant>
       <domain_participant name="Providers_Participant" domain_ref="DomainLibrary::SystemDomain">
@@ -40,11 +85,24 @@
       </domain_participant>
       <domain_participant name="Server_Participant" domain_ref="DomainLibrary::SystemDomain">
         <subscriber name="Server_Subscriber">
-          <data_reader name="Sensor_Reader" topic_ref="Sensor_data"/>
+          <data_reader name="Sensor_Reader" topic_ref="Sensor_data">
+            <datareader_qos base_name="QosLibrary::server">
+            </datareader_qos>
+          </data_reader>
+          <subscriber_qos base_name="QosLibrary::server">
+          </subscriber_qos>
         </subscriber>
         <publisher name="Server_Publisher">
           <data_writer name="Server_Writer" topic_ref="Server_data">
             <datawriter_qos base_name="BuiltinQosLib::Generic.KeepLastReliable.Transient">
+             <property>
+              <value>
+                <element>
+                  <name>dds.data_writer.history.memory_manager.fast_pool.pool_buffer_max_size</name>
+                  <value>4096</value>
+                </element>  
+              </value>  
+            </property>  
               <deadline>
                 <period>
                   <sec>2</sec>
@@ -56,6 +114,8 @@
               </reliability>
             </datawriter_qos>
           </data_writer>
+          <publisher_qos base_name="QosLibrary::server">
+          </publisher_qos>
         </publisher>
       </domain_participant>
     </domain_participant_library>
