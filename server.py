@@ -49,23 +49,26 @@ def insert_patient_data(data):
 initialize_database()
 
 
-def publish_data(server_input, server_output):
-    while True:
-        server_input.wait()  # Wait for data
-        server_input.take()
+# def publish_data(server_input, server_output):
+#     while True:
+#         try:
+#             server_input.wait(500)
+#         except rti.TimeoutError as error:
+#             continue
 
-        for sample in server_input.samples.valid_data_iter:
-            # Process each valid data sample
-            data = sample.get_dictionary()
-            print("Received data:", data)
-
-            # Insert data into the database
-            insert_patient_data(data)
-
-            # Forward data to healthcare providers
-            server_output.instance.set_dictionary(data)
-            server_output.write()
-
+#         server_input.take()
+#         for sample in server_input.samples:
+#             if (sample.info['sample_state'] == 'NOT_READ') and (sample.valid_data == False) and (sample.info['instance_state'] == 'NOT_ALIVE_NO_WRITERS'):
+#                 print("Sensor: " + sample.get_string("sensor_id") + " - Status: Disconnected")
+#             else:
+#                 # Process each valid data sample
+#                 data = sample.get_dictionary()
+#                 print("Received data:", data)
+#                 # Insert data into the database
+#                 insert_patient_data(data)
+#                 # Forward data to healthcare providers
+#                 server_output.instance.set_dictionary(data)
+#                 server_output.write()
 
 
 with rti.open_connector(
@@ -73,24 +76,26 @@ with rti.open_connector(
     url="COE427-HW2.xml") as connector:
 
     server_input = connector.get_input("Server_Subscriber::Sensor_Reader")
+    provider_input = connector.get_input("Providers_Participant::Provider_Subscriber::Provider_Reader")
     server_output = connector.get_output("Server_Publisher::Server_Writer")
 
     while True:
-        server_input.wait()  # Wait for data
+        try:
+            server_input.wait(500)
+        except rti.TimeoutError as error:
+            continue
+
         server_input.take()
-
-        for sample in server_input.samples.valid_data_iter:
-            # Process each valid data sample
-            data = sample.get_dictionary()
-            print("Received data:", data)
-
-            # Insert data into the database
-            insert_patient_data(data)
-
-            # Forward data to healthcare providers
-            server_output.instance.set_dictionary(data)
-            server_output.write()
-
-
-
-        
+        for sample in server_input.samples:
+            if (sample.info['sample_state'] == 'NOT_READ') and (sample.valid_data == False) and (sample.info['instance_state'] == 'NOT_ALIVE_NO_WRITERS'):
+                print("Sensor: " + sample.get_string("sensor_id") + " - Status: Disconnected")
+                break
+            else:
+                # Process each valid data sample
+                data = sample.get_dictionary()
+                print("Received data:", data)
+                # Insert data into the database
+                insert_patient_data(data)
+                # Forward data to healthcare providers
+                server_output.instance.set_dictionary(data)
+                server_output.write()
