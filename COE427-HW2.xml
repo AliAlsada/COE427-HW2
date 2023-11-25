@@ -64,6 +64,14 @@
         <publisher name="Sensor_Publisher">
           <data_writer name="Sensor_Writer" topic_ref="Sensor_data">
             <datawriter_qos base_name="QosLibrary::Sensors">
+              <property>
+              <value>
+                <element>
+                  <name>dds.data_writer.history.memory_manager.fast_pool.pool_buffer_max_size</name>
+                  <value>4096</value>
+                </element>  
+              </value>  
+            </property>  
             </datawriter_qos>
           </data_writer>
           <publisher_qos base_name="QosLibrary::Sensors">
@@ -87,6 +95,14 @@
         <publisher name="Server_Publisher">
           <data_writer name="Server_Writer" topic_ref="Server_data">
             <datawriter_qos base_name="BuiltinQosLib::Generic.KeepLastReliable.Transient">
+             <property>
+              <value>
+                <element>
+                  <name>dds.data_writer.history.memory_manager.fast_pool.pool_buffer_max_size</name>
+                  <value>4096</value>
+                </element>  
+              </value>  
+            </property>  
               <deadline>
                 <period>
                   <sec>2</sec>
