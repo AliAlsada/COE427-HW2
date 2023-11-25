@@ -30,7 +30,20 @@
     <domain_participant_library name="DomainParticipantLibrary">
       <domain_participant name="Sensor_Participant" domain_ref="DomainLibrary::SystemDomain">
         <publisher name="Sensor_Publisher">
-          <data_writer name="Sensor_Writer" topic_ref="Sensor_data"/>
+          <data_writer name="Sensor_Writer" topic_ref="Sensor_data">
+                    <datawriter_qos>
+  <property>
+    <value>
+      <element>
+        <name>dds.data_writer.history.memory_manager.fast_pool.pool_buffer_max_size</name>
+        <!-- Typical size of your data type. -->
+        <value>4096</value>
+ 
+      </element>  
+     </value>  
+   </property>  
+ </datawriter_qos>   
+          </data_writer>
         </publisher>
       </domain_participant>
       <domain_participant name="Providers_Participant" domain_ref="DomainLibrary::SystemDomain">
@@ -44,17 +57,18 @@
         </subscriber>
         <publisher name="Server_Publisher">
           <data_writer name="Server_Writer" topic_ref="Server_data">
-            <datawriter_qos base_name="BuiltinQosLib::Generic.KeepLastReliable.Transient">
-              <deadline>
-                <period>
-                  <sec>2</sec>
-                  <nanosec>0</nanosec>
-                </period>
-              </deadline>
-              <reliability>
-                <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
-              </reliability>
-            </datawriter_qos>
+          <datawriter_qos>
+  <property>
+    <value>
+      <element>
+        <name>dds.data_writer.history.memory_manager.fast_pool.pool_buffer_max_size</name>
+        <!-- Typical size of your data type. -->
+        <value>4096</value>
+ 
+      </element>  
+     </value>  
+   </property>  
+ </datawriter_qos>   
           </data_writer>
         </publisher>
       </domain_participant>
