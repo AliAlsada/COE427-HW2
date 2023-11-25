@@ -49,6 +49,25 @@ def insert_patient_data(data):
 initialize_database()
 
 
+def publish_data(server_input, server_output):
+    while True:
+        server_input.wait()  # Wait for data
+        server_input.take()
+
+        for sample in server_input.samples.valid_data_iter:
+            # Process each valid data sample
+            data = sample.get_dictionary()
+            print("Received data:", data)
+
+            # Insert data into the database
+            insert_patient_data(data)
+
+            # Forward data to healthcare providers
+            server_output.instance.set_dictionary(data)
+            server_output.write()
+
+
+
 with rti.open_connector(
     config_name="DomainParticipantLibrary::Server_Participant",
     url="COE427-HW2.xml") as connector:
