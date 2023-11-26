@@ -51,14 +51,14 @@
       <qos_profile name="server">
         <datareader_qos>
           <durability>
-            <kind>PERSISTENT_DURABILITY_QOS</kind>
+            <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
           </durability>
-          <latency_budget>
-            <duration>
+          <deadline>
+            <period>
               <sec>10</sec>
               <nanosec>500</nanosec>
-            </duration>
-          </latency_budget>
+            </period>
+          </deadline>
           <liveliness>
             <lease_duration>
               <sec>3</sec>
@@ -74,7 +74,7 @@
         </datareader_qos>
         <datawriter_qos>
           <durability>
-            <kind>PERSISTENT_DURABILITY_QOS</kind>
+            <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
           </durability>
           <deadline>
             <period>
