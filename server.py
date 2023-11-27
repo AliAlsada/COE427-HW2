@@ -50,6 +50,7 @@ def insert_patient_data(data):
 initialize_database()
 
 
+
 def publish_data(server_input, server_output):
     while True:
         try:

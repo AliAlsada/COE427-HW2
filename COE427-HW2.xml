@@ -18,6 +18,12 @@
     <qos_library name="QosLibrary">
       <qos_profile name="Sensors" base_name="BuiltinQosLib::Pattern.Status">
         <datawriter_qos>
+          <deadline>
+            <period>
+              <sec>10</sec>
+              <nanosec>500</nanosec>
+            </period>
+          </deadline>
           <liveliness>
             <lease_duration>
               <sec>3</sec>
@@ -28,6 +34,12 @@
       </qos_profile>
       <qos_profile name="Providers" base_name="BuiltinQosLib::Pattern.Status">
         <datareader_qos>
+          <deadline>
+            <period>
+              <sec>10</sec>
+              <nanosec>500</nanosec>
+            </period>
+          </deadline>
           <liveliness>
             <lease_duration>
               <sec>3</sec>
@@ -38,14 +50,50 @@
       </qos_profile>
       <qos_profile name="server">
         <datareader_qos>
+          <durability>
+            <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+          </durability>
+          <deadline>
+            <period>
+              <sec>10</sec>
+              <nanosec>500</nanosec>
+            </period>
+          </deadline>
+          <liveliness>
+            <lease_duration>
+              <sec>3</sec>
+              <nanosec>0</nanosec>
+            </lease_duration>
+          </liveliness>
           <reliability>
-            <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+            <kind>RELIABLE_RELIABILITY_QOS</kind>
           </reliability>
+          <history>
+            <kind>KEEP_ALL_HISTORY_QOS</kind>
+          </history>
         </datareader_qos>
         <datawriter_qos>
+          <durability>
+            <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+          </durability>
+          <deadline>
+            <period>
+              <sec>10</sec>
+              <nanosec>500</nanosec>
+            </period>
+          </deadline>
+          <liveliness>
+            <lease_duration>
+              <sec>3</sec>
+              <nanosec>0</nanosec>
+            </lease_duration>
+          </liveliness>
           <reliability>
-            <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+            <kind>RELIABLE_RELIABILITY_QOS</kind>
           </reliability>
+          <history>
+            <kind>KEEP_ALL_HISTORY_QOS</kind>
+          </history>
         </datawriter_qos>
       </qos_profile>
     </qos_library>
