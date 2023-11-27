@@ -76,7 +76,7 @@ with rti.open_connector(
     url="COE427-HW2.xml") as connector:
 
     server_input = connector.get_input("Server_Subscriber::Sensor_Reader")
-    provider_input = connector.get_input("Providers_Participant::Provider_Subscriber::Provider_Reader")
+    # provider_input = connector.get_input("Providers_Participant::Provider_Subscriber::Provider_Reader")
     server_output = connector.get_output("Server_Publisher::Server_Writer")
 
     while True:
