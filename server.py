@@ -1,4 +1,5 @@
 import rticonnextdds_connector as rti
+import threading
 import sqlite3
 import time
 import os
@@ -49,36 +50,8 @@ def insert_patient_data(data):
 initialize_database()
 
 
-# def publish_data(server_input, server_output):
-#     while True:
-#         try:
-#             server_input.wait(500)
-#         except rti.TimeoutError as error:
-#             continue
 
-#         server_input.take()
-#         for sample in server_input.samples:
-#             if (sample.info['sample_state'] == 'NOT_READ') and (sample.valid_data == False) and (sample.info['instance_state'] == 'NOT_ALIVE_NO_WRITERS'):
-#                 print("Sensor: " + sample.get_string("sensor_id") + " - Status: Disconnected")
-#             else:
-#                 # Process each valid data sample
-#                 data = sample.get_dictionary()
-#                 print("Received data:", data)
-#                 # Insert data into the database
-#                 insert_patient_data(data)
-#                 # Forward data to healthcare providers
-#                 server_output.instance.set_dictionary(data)
-#                 server_output.write()
-
-
-with rti.open_connector(
-    config_name="DomainParticipantLibrary::Server_Participant",
-    url="COE427-HW2.xml") as connector:
-
-    server_input = connector.get_input("Server_Subscriber::Sensor_Reader")
-    # provider_input = connector.get_input("Providers_Participant::Provider_Subscriber::Provider_Reader")
-    server_output = connector.get_output("Server_Publisher::Server_Writer")
-
+def publish_data(server_input, server_output):
     while True:
         try:
             server_input.wait(500)
@@ -99,3 +72,40 @@ with rti.open_connector(
                 # Forward data to healthcare providers
                 server_output.instance.set_dictionary(data)
                 server_output.write()
+
+
+"""
+This thread will monitor the joining and leaving of a provider
+"""
+def provider_sub(provider_input):
+    while True:
+        try:
+            provider_input.wait(500)
+        except rti.TimeoutError as error:
+            continue
+
+        provider_input.take()
+        for sample in provider_input.samples:
+            if (sample.info['sample_state'] == 'NOT_READ') and (sample.valid_data == False) and (sample.info['instance_state'] == 'NOT_ALIVE_NO_WRITERS'):
+                print("Provider: " + sample.get_string("username") + " - Status: Disconnected")
+                break
+             
+
+with rti.open_connector(
+    config_name="DomainParticipantLibrary::Server_Participant",
+    url="COE427-HW2.xml") as connector:
+
+    server_input = connector.get_input("Server_Subscriber::Sensor_Reader")
+    provider_input = connector.get_input("Server_Subscriber::Provider_Reader")
+    server_output = connector.get_output("Server_Publisher::Server_Writer")
+
+    
+
+    t1 = threading.Thread(target=publish_data, args=(server_input, server_output))
+    t1.start()
+
+    t2 = threading.Thread(target=provider_sub, args=(provider_input,))
+    t2.start()
+
+    t1.join()
+    t2.join()

@@ -75,6 +75,6 @@ with rti.open_connector(
     t1.join()
     t2.join()
 
-    # #unregister
-    # sensor_output.instance.set_string("sensor_id", args.sensor_id)
-    # sensor_output.write(action="unregister")
+    #unregister
+    sensor_output.instance.set_number("sensor_id", args.sensor_id)
+    sensor_output.write(action="unregister")

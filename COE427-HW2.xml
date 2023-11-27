@@ -104,6 +104,7 @@
         <register_type name="Healthcare_Providers" type_ref="Healthcare_Providers_Type"/>
         <topic name="Sensor_data" register_type_ref="Sensor"/>
         <topic name="Server_data" register_type_ref="Sensor"/>
+        <topic name="Provider_data" register_type_ref="Healthcare_Providers"/>
       </domain>
     </domain_library>
 
@@ -130,6 +131,9 @@
         <subscriber name="Provider_Subscriber">
           <data_reader name="Provider_Reader" topic_ref="Server_data"/>
         </subscriber>
+        <publisher name="Provider_Publisher">
+          <data_writer name="Provider_Writer" topic_ref="Provider_data"/>
+        </publisher>
       </domain_participant>
       <domain_participant name="Server_Participant" domain_ref="DomainLibrary::SystemDomain">
         <subscriber name="Server_Subscriber">
@@ -137,6 +141,7 @@
             <datareader_qos base_name="QosLibrary::server">
             </datareader_qos>
           </data_reader>
+          <data_reader name="Provider_Reader" topic_ref="Provider_data"/>
           <subscriber_qos base_name="QosLibrary::server">
           </subscriber_qos>
         </subscriber>
