@@ -100,8 +100,9 @@ with rti.open_connector(
     provider_output = connector.get_output("Provider_Publisher::Provider_Writer")
 
     #inform the server about the connection
-    # provider_output.instance.set_number("provider_id", args.provider_id)
-    # provider_output.write()
+    provider_output.instance.set_number("provider_id", args.provider_id)
+    provider_output.instance.set_string("username", args.username)
+    provider_output.write()
 
     t1 = threading.Thread(target=command_task)
     t1.start()
@@ -112,10 +113,11 @@ with rti.open_connector(
     t1.join()
     t2.join()
 
-    #unregister
     provider_output.instance.set_number("provider_id", args.provider_id)
     provider_output.instance.set_string("username", args.username)
-    provider_output.write()
+    provider_output.write(action="unregister")
+
+
 
 
 

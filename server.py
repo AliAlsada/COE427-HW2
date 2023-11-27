@@ -4,6 +4,9 @@ import sqlite3
 import time
 import os
 
+
+lock = threading.RLock()
+
 def initialize_database():
     # Connect to SQLite database (or create it if it doesn't exist)
     conn = sqlite3.connect('data.db')
@@ -54,11 +57,11 @@ initialize_database()
 def publish_data(server_input, server_output):
     while True:
         try:
-            server_input.wait(500)
+            server_input.wait()
         except rti.TimeoutError as error:
             continue
 
-        server_input.take()
+        server_input.read()
         for sample in server_input.samples:
             if (sample.info['sample_state'] == 'NOT_READ') and (sample.valid_data == False) and (sample.info['instance_state'] == 'NOT_ALIVE_NO_WRITERS'):
                 print("Sensor: " + sample.get_string("sensor_id") + " - Status: Disconnected")
@@ -89,6 +92,8 @@ def provider_sub(provider_input):
             if (sample.info['sample_state'] == 'NOT_READ') and (sample.valid_data == False) and (sample.info['instance_state'] == 'NOT_ALIVE_NO_WRITERS'):
                 print("Provider: " + sample.get_string("username") + " - Status: Disconnected")
                 break
+            else:
+                print("Provider: " + sample.get_string("username") + " - Status: connected")
              
 
 with rti.open_connector(
