@@ -56,6 +56,7 @@
         <register_type name="Healthcare_Providers" type_ref="Healthcare_Providers_Type"/>
         <topic name="Sensor_data" register_type_ref="Sensor"/>
         <topic name="Server_data" register_type_ref="Sensor"/>
+        <topic name="Provider_data" register_type_ref="Healthcare_Providers"/>
       </domain>
     </domain_library>
 
@@ -65,13 +66,13 @@
           <data_writer name="Sensor_Writer" topic_ref="Sensor_data">
             <datawriter_qos base_name="QosLibrary::Sensors">
               <property>
-              <value>
-                <element>
-                  <name>dds.data_writer.history.memory_manager.fast_pool.pool_buffer_max_size</name>
-                  <value>4096</value>
-                </element>  
-              </value>  
-            </property>  
+                <value>
+                  <element>
+                    <name>dds.data_writer.history.memory_manager.fast_pool.pool_buffer_max_size</name>
+                    <value>4096</value>
+                  </element>
+                </value>
+              </property>
             </datawriter_qos>
           </data_writer>
           <publisher_qos base_name="QosLibrary::Sensors">
@@ -82,6 +83,9 @@
         <subscriber name="Provider_Subscriber">
           <data_reader name="Provider_Reader" topic_ref="Server_data"/>
         </subscriber>
+        <publisher name="Provider_Publisher">
+          <data_writer name="Provider_Writer" topic_ref="Provider_data"/>
+        </publisher>
       </domain_participant>
       <domain_participant name="Server_Participant" domain_ref="DomainLibrary::SystemDomain">
         <subscriber name="Server_Subscriber">
@@ -89,20 +93,13 @@
             <datareader_qos base_name="QosLibrary::server">
             </datareader_qos>
           </data_reader>
+          <data_reader name="Provider_Reader" topic_ref="Provider_data"/>
           <subscriber_qos base_name="QosLibrary::server">
           </subscriber_qos>
         </subscriber>
         <publisher name="Server_Publisher">
           <data_writer name="Server_Writer" topic_ref="Server_data">
             <datawriter_qos base_name="BuiltinQosLib::Generic.KeepLastReliable.Transient">
-             <property>
-              <value>
-                <element>
-                  <name>dds.data_writer.history.memory_manager.fast_pool.pool_buffer_max_size</name>
-                  <value>4096</value>
-                </element>  
-              </value>  
-            </property>  
               <deadline>
                 <period>
                   <sec>2</sec>
@@ -112,6 +109,14 @@
               <reliability>
                 <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
               </reliability>
+              <property>
+                <value>
+                  <element>
+                    <name>dds.data_writer.history.memory_manager.fast_pool.pool_buffer_max_size</name>
+                    <value>4096</value>
+                  </element>
+                </value>
+              </property>
             </datawriter_qos>
           </data_writer>
           <publisher_qos base_name="QosLibrary::server">

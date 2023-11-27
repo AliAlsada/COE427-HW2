@@ -1,9 +1,19 @@
 import threading
+import argparse
 import time
 import os
 
 
 import rticonnextdds_connector as rti
+
+
+#get the provider id as an argument
+parser = argparse.ArgumentParser(description='vital sign application')
+parser.add_argument('provider_id', help='Provider ID', type=int)  
+parser.add_argument('username', help='username', type=str)  
+
+
+args = parser.parse_args()
 
 lock = threading.RLock()
 thread_state = True
@@ -16,7 +26,7 @@ ABNORMAL_THRESHOLDS = {
     'oxygen_saturation': {'low': 92, 'high': 100}  # Percentage
 }
 
-def command_task(patient_data):
+def command_task():
     
     global thread_state
     global patient_id
@@ -58,8 +68,12 @@ def reading_thread(patient_data):
     global thread_state
 
     while thread_state:
+        try:
+            patient_data.wait(500)
+        except rti.TimeoutError as error:
+            continue
+
         with lock:
-            patient_data.wait()
             patient_data.take()
             for sample in patient_data.samples.valid_data_iter:
 
@@ -79,10 +93,17 @@ with rti.open_connector(
     config_name="DomainParticipantLibrary::Providers_Participant",
     url="COE427-HW2.xml") as connector:
 
-
+    #input
     patient_data = connector.get_input("Provider_Subscriber::Provider_Reader")
 
-    t1 = threading.Thread(target=command_task, args=(patient_data,))
+    #output
+    provider_output = connector.get_output("Provider_Publisher::Provider_Writer")
+
+    #inform the server about the connection
+    # provider_output.instance.set_number("provider_id", args.provider_id)
+    # provider_output.write()
+
+    t1 = threading.Thread(target=command_task)
     t1.start()
 
     t2 = threading.Thread(target=reading_thread, args=(patient_data,))
@@ -90,5 +111,11 @@ with rti.open_connector(
 
     t1.join()
     t2.join()
+
+    #unregister
+    provider_output.instance.set_number("provider_id", args.provider_id)
+    provider_output.instance.set_string("username", args.username)
+    provider_output.write()
+
 
 
