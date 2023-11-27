@@ -47,6 +47,20 @@
             </lease_duration>
           </liveliness>
         </datareader_qos>
+        <datawriter_qos>
+          <deadline>
+            <period>
+              <sec>10</sec>
+              <nanosec>500</nanosec>
+            </period>
+          </deadline>
+          <liveliness>
+            <lease_duration>
+              <sec>3</sec>
+              <nanosec>0</nanosec>
+            </lease_duration>
+          </liveliness>
+        </datawriter_qos>
       </qos_profile>
       <qos_profile name="server">
         <datareader_qos>
@@ -117,7 +131,7 @@
                 <value>
                   <element>
                     <name>dds.data_writer.history.memory_manager.fast_pool.pool_buffer_max_size</name>
-                    <value>4096</value>
+                    <value>100000</value>
                   </element>
                 </value>
               </property>
@@ -130,9 +144,22 @@
       <domain_participant name="Providers_Participant" domain_ref="DomainLibrary::SystemDomain">
         <subscriber name="Provider_Subscriber">
           <data_reader name="Provider_Reader" topic_ref="Server_data"/>
+          <subscriber_qos base_name="QosLibrary::Providers">
+          </subscriber_qos>
         </subscriber>
         <publisher name="Provider_Publisher">
-          <data_writer name="Provider_Writer" topic_ref="Provider_data"/>
+          <data_writer name="Provider_Writer" topic_ref="Provider_data">
+            <datawriter_qos base_name="QosLibrary::Providers">
+              <property>
+                <value>
+                  <element>
+                    <name>dds.data_writer.history.memory_manager.fast_pool.pool_buffer_max_size</name>
+                    <value>100000</value>
+                  </element>
+                </value>
+              </property>
+            </datawriter_qos>
+          </data_writer>
         </publisher>
       </domain_participant>
       <domain_participant name="Server_Participant" domain_ref="DomainLibrary::SystemDomain">
@@ -141,7 +168,18 @@
             <datareader_qos base_name="QosLibrary::server">
             </datareader_qos>
           </data_reader>
-          <data_reader name="Provider_Reader" topic_ref="Provider_data"/>
+          <data_reader name="Provider_Reader" topic_ref="Provider_data">
+            <datareader_qos base_name="QosLibrary::server">
+              <property>
+                <value>
+                  <element>
+                    <name>dds.data_reader.history.memory_manager.fast_pool.pool_buffer_max_size</name>
+                    <value>100000</value>
+                  </element>
+                </value>
+              </property>
+            </datareader_qos>
+          </data_reader>
           <subscriber_qos base_name="QosLibrary::server">
           </subscriber_qos>
         </subscriber>
@@ -161,7 +199,7 @@
                 <value>
                   <element>
                     <name>dds.data_writer.history.memory_manager.fast_pool.pool_buffer_max_size</name>
-                    <value>4096</value>
+                    <value>100000</value>
                   </element>
                 </value>
               </property>
