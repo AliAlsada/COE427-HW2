@@ -1,3 +1,8 @@
+# Mohammad Al Ramis - 201920170
+# Mohammed Althunayan – 201944590
+# Ali Alsada – 201960570
+
+
 import threading
 import argparse
 import time
@@ -104,15 +109,18 @@ with rti.open_connector(
     provider_output.instance.set_string("username", args.username)
     provider_output.write()
 
+    #  Start threads
     t1 = threading.Thread(target=command_task)
     t1.start()
 
     t2 = threading.Thread(target=reading_thread, args=(patient_data,))
     t2.start()
 
+    #wait for the threads to finish
     t1.join()
     t2.join()
 
+    #inform the server about the disconnection
     provider_output.instance.set_number("provider_id", args.provider_id)
     provider_output.instance.set_string("username", args.username)
     provider_output.write(action="unregister")

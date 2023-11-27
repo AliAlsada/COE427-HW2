@@ -1,3 +1,8 @@
+# Mohammad Al Ramis - 201920170
+# Mohammed Althunayan – 201944590
+# Ali Alsada – 201960570
+
+
 from datetime import datetime
 import threading
 import argparse
@@ -8,15 +13,17 @@ import os
 import rticonnextdds_connector as rti
 
 
-
+# Set up argument parser
 parser = argparse.ArgumentParser(description='vital sign application')
 parser.add_argument('sensor_id', help='Sensor ID', type=int)  
 
 args = parser.parse_args()
 
-
+# Set environment variables
 thread_state = True
 
+
+# Define the callback for the message subscriber
 def generate_vital_sign(sensor_output):
     global thread_state
 
@@ -48,7 +55,7 @@ def generate_vital_sign(sensor_output):
 
         time.sleep(10)  # Publish every 10 second
 
-
+# Define the callback for the command task
 def command_task():
     global thread_state
 
@@ -59,19 +66,22 @@ def command_task():
             thread_state = False
 
 
-
+# Set environment variables
 with rti.open_connector(
     config_name="DomainParticipantLibrary::Sensor_Participant",
     url="COE427-HW2.xml") as connector:
 
+    # Getting input and output
     sensor_output = connector.get_output("Sensor_Publisher::Sensor_Writer")
 
+    #  Start threads
     t1 = threading.Thread(target=generate_vital_sign, args=(sensor_output,))
     t1.start()
 
     t2 = threading.Thread(target=command_task)
     t2.start()
 
+    # Wait for threads to finish
     t1.join()
     t2.join()
 
